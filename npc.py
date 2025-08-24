@@ -11,6 +11,7 @@ class NPC(AnimatedSprite):
         self.idle_images = self.get_images(self.path + '/idle')
         self.pain_images = self.get_images(self.path + '/pain')
         self.walk_images = self.get_images(self.path + '/walk')
+        self.gold = randint(5, 15) # <--- זו השורה החדשה!
 
         self.attack_dist = randint(3, 6)
         self.speed = 0.03
@@ -81,6 +82,8 @@ class NPC(AnimatedSprite):
         if self.health < 1:
             self.alive = False
             self.game.sound.npc_death.play()
+            self.game.player.gold += self.gold
+            print(f"החיה הובסה! מצאת {self.gold} מטבעות זהב. סהכ זהב: {self.game.player.gold}")
 
     def run_logic(self):
         if self.alive:

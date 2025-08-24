@@ -6,7 +6,7 @@ import math
 class Player:
     def __init__(self, game):
         self.game = game
-        self.x, self.y = PLAYER_POS
+        self.y, self.x = PLAYER_POS
         self.angle = PLAYER_ANGLE
         self.shot = False
         self.health = PLAYER_MAX_HEALTH
@@ -15,11 +15,12 @@ class Player:
         self.time_prev = pg.time.get_ticks()
         # diagonal movement correction
         self.diag_move_corr = 1 / math.sqrt(2)
+        self.gold = 0  # <--- זו השורה החדשה!
 
     def recover_health(self):
-        if self.check_health_recovery_delay() and self.health < PLAYER_MAX_HEALTH:
-            self.health += 1
-
+    #    if self.check_health_recovery_delay() and self.health < PLAYER_MAX_HEALTH:
+     #       self.health += 1
+        pass
     def check_health_recovery_delay(self):
         time_now = pg.time.get_ticks()
         if time_now - self.time_prev > self.health_recovery_delay:
