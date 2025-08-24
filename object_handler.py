@@ -69,7 +69,7 @@ class ObjectHandler:
             self.game.object_renderer.win()
             pg.display.flip()
             pg.time.delay(1500)
-            self.game.new_game()
+            self.game.advance_level()
 
     def update(self):
         self.npc_positions = {npc.map_pos for npc in self.npc_list if npc.alive}

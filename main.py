@@ -20,6 +20,7 @@ class Game:
         pg.event.set_grab(True)
         self.clock = pg.time.Clock()
         self.delta_time = 1
+        self.current_level = 1 # <--- הוספנו משתנה חדש! נתחיל בשלב 1
         self.global_trigger = False
         self.global_event = pg.USEREVENT + 0
         pg.time.set_timer(self.global_event, 40)
@@ -44,6 +45,20 @@ class Game:
         pg.display.flip()
         self.delta_time = self.clock.tick(FPS)
         pg.display.set_caption(f'{self.clock.get_fps() :.1f}')
+    
+    def advance_level(self):
+        self.current_level += 1
+        # נבדוק אם הגענו לסוף המשחק
+        if self.current_level > len(LEVEL_MAPS):
+            print("ניצחת את המשחק! כל הכבוד!")
+            # כאן אפשר להוסיף מסך ניצחון ולצאת
+            pg.quit()
+            sys.exit()
+        else:
+            print(f"עובר לשלב {self.current_level}...")
+            # קוראים ל-new_game כדי לטעון מחדש את המפה, השחקן והאויבים לשלב החדש
+            self.new_game()
+
 
     def draw(self):
         # self.screen.fill('black')

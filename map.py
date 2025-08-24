@@ -215,8 +215,8 @@ LEVEL_MAPS = {
     1: mini_map_1,
     2: mini_map_2,
     3: mini_map_3,
-    4: mini_map_4
-    5: mini_map_5
+    4: mini_map_4,
+    5: mini_map_5,
     6: mini_map_6
 }
 
