@@ -9,23 +9,51 @@ class Player:
         self.y, self.x = PLAYER_POS
         self.angle = PLAYER_ANGLE
         self.shot = False
+        
+        # --- מאפייני דמות RPG ---
         self.health = PLAYER_MAX_HEALTH
+        self.gold = 0
+        self.level = 1
+        self.xp = 0
+        self.xp_to_next_level = 100 # צריך 100 XP לרמה 2
+        self.attack_damage = PLAYER_ATTACK_DAMAGE # נצטרך להוסיף את זה לקובץ settings
+        
         self.rel = 0
-        self.health_recovery_delay = 700
-        self.time_prev = pg.time.get_ticks()
         # diagonal movement correction
         self.diag_move_corr = 1 / math.sqrt(2)
-        self.gold = 0  # <--- זו השורה החדשה!
+
+    def add_xp(self, xp_amount):
+        """פונקציה זו נקראת כשהורגים חיה"""
+        self.xp += xp_amount
+        print(f"קיבלת {xp_amount} נקודות ניסיון! סך הכל: {self.xp} / {self.xp_to_next_level}")
+        # בדוק אם עלינו רמה
+        if self.xp >= self.xp_to_next_level:
+            self.level_up()
+
+    def level_up(self):
+        """מעלה את השחקן רמה ומחזק אותו"""
+        self.level += 1
+        self.xp -= self.xp_to_next_level
+        self.xp_to_next_level = int(self.xp_to_next_level * 1.5)
+        
+        # --- חיזוק הדמות! ---
+        # מעלים את כוח ההתקפה שלו
+        self.attack_damage += 5 
+        # מרפאים אותו לחלוטין
+        self.health = PLAYER_MAX_HEALTH 
+        
+        self.game.sound.level_up.play() # נניח שיש לנו צליל עליית רמה
+        
+        print("\n" + "="*30)
+        print(f"    !!! עלית לרמה {self.level} !!!")
+        print(f"    כוח ההתקפה שלך עלה ל-{self.attack_damage}")
+        print(f"    הבריאות שלך התחדשה במלואה!")
+        print(f"    דרוש {self.xp_to_next_level} ניסיון לרמה הבאה.")
+        print("="*30 + "\n")
 
     def recover_health(self):
-    #    if self.check_health_recovery_delay() and self.health < PLAYER_MAX_HEALTH:
-     #       self.health += 1
+        # נטרלנו את זה, אבל משאירים את הפונקציה למקרה שנרצה ריפוי אחר בעתיד
         pass
-    def check_health_recovery_delay(self):
-        time_now = pg.time.get_ticks()
-        if time_now - self.time_prev > self.health_recovery_delay:
-            self.time_prev = time_now
-            return True
 
     def check_game_over(self):
         if self.health < 1:
@@ -41,12 +69,15 @@ class Player:
         self.check_game_over()
 
     def single_fire_event(self, event):
+        # לוגיקת הירי נשארת כרגע, בעתיד נחליף אותה בלוגיקת קרב
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1 and not self.shot and not self.game.weapon.reloading:
                 self.game.sound.shotgun.play()
                 self.shot = True
                 self.game.weapon.reloading = True
 
+    # ... כל שאר הפונקציות (movement, check_wall, mouse_control וכו') נשארות בדיוק אותו הדבר ...
+    # (אני מדלג על הדבקתן כאן כדי שההודעה תהיה קצרה, אבל הן צריכות להיות כאן)
     def movement(self):
         sin_a = math.sin(self.angle)
         cos_a = math.cos(self.angle)
@@ -73,18 +104,10 @@ class Player:
             num_key_pressed += 1
             dx += -speed_sin
             dy += speed_cos
-
-        # diag move correction
         if num_key_pressed:
             dx *= self.diag_move_corr
             dy *= self.diag_move_corr
-
         self.check_wall_collision(dx, dy)
-
-        # if keys[pg.K_LEFT]:
-        #     self.angle -= PLAYER_ROT_SPEED * self.game.delta_time
-        # if keys[pg.K_RIGHT]:
-        #     self.angle += PLAYER_ROT_SPEED * self.game.delta_time
         self.angle %= math.tau
 
     def check_wall(self, x, y):
